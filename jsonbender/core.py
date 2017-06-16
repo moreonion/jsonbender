@@ -30,6 +30,15 @@ class Bender(object):
     def __eq__(self, other):
         return Eq(self, other)
 
+    def __and__(self, other):
+        return And(self, other)
+
+    def __or__(self, other):
+        return Or(self, other)
+
+    def __invert__(self):
+        return Invert(self)
+
     def __add__(self, other):
         return Add(self, other)
 
@@ -40,6 +49,15 @@ class Bender(object):
         return Mul(self, other)
 
     def __div__(self, other):
+        return Div(self, other)
+
+    def __neg__(self):
+        return Neg(self)
+
+    def __truediv__(self, other):
+        return Div(self, other)
+
+    def __floordiv__(self, other):
         return Div(self, other)
 
     def __rshift__(self, other):
@@ -69,8 +87,41 @@ class Compose(Bender):
         return self._second.raw_execute(self._first.raw_execute(source))
 
 
-class BinaryOperator(Bender):
+class UnaryOperator(Bender):
+    """
+    Base class for unary bending operators. Should not be directly
+    instantiated.
 
+    Whenever a unary op is activated, the op() method is called with the
+    *value* (that is, the bender is implicitly activated).
+
+    Subclasses must implement the op() method, which takes one value and
+    should return the desired result.
+    """
+
+    def __init__(self, bender):
+        self.bender = bender
+
+    def op(self, v):
+        raise NotImplementedError()
+
+    def raw_execute(self, source):
+        source = Transport.from_source(source)
+        val = self.op(self.bender(source))
+        return Transport(val, source.context)
+
+
+class Neg(UnaryOperator):
+    def op(self, v):
+        return -v
+
+
+class Invert(UnaryOperator):
+    def op(self, v):
+        return not v
+
+
+class BinaryOperator(Bender):
     """
     Base class for binary bending operators. Should not be directly
     instantiated.
@@ -121,6 +172,16 @@ class Eq(BinaryOperator):
         return v1 == v2
 
 
+class And(BinaryOperator):
+    def op(self, v1, v2):
+        return v1 and v2
+
+
+class Or(BinaryOperator):
+    def op(self, v1, v2):
+        return v1 or v2
+
+
 class Context(Bender):
     def raw_execute(self, source):
         transport = Transport.from_source(source)
@@ -168,7 +229,7 @@ def _bend(mapping, transport):
                 m = 'Error for key {}: {}'.format(k, str(e))
                 raise BendingException(m)
         elif isinstance(value, list):
-            newv = map(lambda v: _bend(v, transport), value)
+            newv = list(map(lambda v: _bend(v, transport), value))
         elif isinstance(value, dict):
             newv = _bend(value, transport)
         else:
