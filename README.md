@@ -7,6 +7,12 @@ It's name is inspired by Nickelodeon's cartoon series [Avatar: The Last Airbende
 ![aang](http://cdn-static.denofgeek.com/sites/denofgeek/files/9/21//the-last-airbender-aang-the-avatar.jpg)
 
 
+License
+---
+
+JSONBender is licensed under the [MIT license](https://choosealicense.com/licenses/mit/). See the LICENSE file for more details.
+
+
 Installing
 ---
 
