@@ -14,17 +14,21 @@ Installing
 pip install JSONBender
 ```
 
-Contribute
+Contributing
 ---
-If you have any contributions fork this repository and open a Pull Request. Please, make sure the tests are OK:
 
+If you want to contribute to JSONBender (thanks!), here's how to do it:
+
+1. Fork the repository.
+2. Make sure the tests are all fine. Since we support both python 2 and 3, run the tests with [tox](https://github.com/tox-dev/tox):
 ```bash
-python -m unittest discover -s tests 
+tox tests
 ```
+3. Open the pull request!
+
 
 Usage
 ---
-
 
 JSONBender works by calling the `bend()` function with a mapping and the source `dict` as arguments. It raises a `BendingException` if anyting bad happens during the transformation phase.
 
