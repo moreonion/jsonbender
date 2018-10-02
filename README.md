@@ -4,7 +4,7 @@ About
 JSONBender is an embedded Python [DSL](https://en.wikipedia.org/wiki/Domain-specific_language) for transforming dicts.
 It's name is inspired by Nickelodeon's cartoon series [Avatar: The Last Airbender](https://en.wikipedia.org/wiki/Avatar:_The_Last_Airbender).
 
-![aang](http://cdn-static.denofgeek.com/sites/denofgeek/files/9/21//the-last-airbender-aang-the-avatar.jpg)
+![aang](aang.png)
 
 
 License
