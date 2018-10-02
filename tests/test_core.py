@@ -117,6 +117,10 @@ class TestOperators(unittest.TestCase, BenderTestMixin):
         self.assert_bender(K(42) == K(42), None, True)
         self.assert_bender(K(42) == K(27), None, False)
 
+    def test_ne(self):
+        self.assert_bender(K(42) != K(42), None, False)
+        self.assert_bender(K(42) != K(27), None, True)
+
     def test_and(self):
         self.assert_bender(K(True) & K(True), None, True)
         self.assert_bender(K(True) & K(False), None, False)
