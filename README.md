@@ -14,6 +14,13 @@ Installing
 pip install JSONBender
 ```
 
+Contribute
+---
+If you have any contributions fork this repository and open a Pull Request. Please, make sure the tests are OK:
+
+```bash
+python -m unittest discover -s tests 
+```
 
 Usage
 ---
