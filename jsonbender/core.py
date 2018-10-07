@@ -30,6 +30,9 @@ class Bender(object):
     def __eq__(self, other):
         return Eq(self, other)
 
+    def __ne__(self, other):
+        return Ne(self, other)
+
     def __and__(self, other):
         return And(self, other)
 
@@ -170,6 +173,11 @@ class Div(BinaryOperator):
 class Eq(BinaryOperator):
     def op(self, v1, v2):
         return v1 == v2
+
+
+class Ne(BinaryOperator):
+    def op(self, v1, v2):
+        return v1 != v2
 
 
 class And(BinaryOperator):
