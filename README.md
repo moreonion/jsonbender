@@ -4,7 +4,13 @@ About
 JSONBender is an embedded Python [DSL](https://en.wikipedia.org/wiki/Domain-specific_language) for transforming dicts.
 It's name is inspired by Nickelodeon's cartoon series [Avatar: The Last Airbender](https://en.wikipedia.org/wiki/Avatar:_The_Last_Airbender).
 
-![aang](http://cdn-static.denofgeek.com/sites/denofgeek/files/9/21//the-last-airbender-aang-the-avatar.jpg)
+![aang](aang.png)
+
+
+License
+---
+
+JSONBender is licensed under the [MIT license](https://choosealicense.com/licenses/mit/). See the LICENSE file for more details.
 
 
 Installing
@@ -14,10 +20,21 @@ Installing
 pip install JSONBender
 ```
 
+Contributing
+---
+
+If you want to contribute to JSONBender (thanks!), here's how to do it:
+
+1. Fork the repository.
+2. Make sure the tests are all fine. Since we support both python 2 and 3, run the tests with [tox](https://github.com/tox-dev/tox):
+```bash
+tox tests
+```
+3. Open the pull request!
+
 
 Usage
 ---
-
 
 JSONBender works by calling the `bend()` function with a mapping and the source `dict` as arguments. It raises a `BendingException` if anyting bad happens during the transformation phase.
 
