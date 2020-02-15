@@ -1,6 +1,3 @@
-from jsonbender._compat import iteritems
-
-
 class Bender(object):
 
     """
@@ -100,12 +97,12 @@ class Dict(Bender):
     """Bender wrapper for dicts."""
 
     def __init__(self, dict_):
-        self.dict = {k: benderify(v) for k, v in iteritems(dict_)}
+        self.dict = {k: benderify(v) for k, v in dict_.items()}
 
     def raw_execute(self, source):
         source = Transport.from_source(source)
         res = {}
-        for k, v in iteritems(self.dict):
+        for k, v in self.dict.items():
             try:
                 res[k] = v.raw_execute(source).value
             except Exception as e:
