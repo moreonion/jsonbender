@@ -3,7 +3,6 @@ import unittest
 import sys
 
 from jsonbender import S, K, F
-from jsonbender._compat import iteritems
 from jsonbender.core import bend, BendingException, Context
 from jsonbender.test import BenderTestMixin
 
@@ -151,7 +150,7 @@ class TestGetItem(unittest.TestCase, BenderTestMixin):
 
 class TestDict(unittest.TestCase, BenderTestMixin):
     def test_function_with_dict(self):
-        filter_none = F(lambda d: {k: v for k, v in iteritems(d) if v is not None})
+        filter_none = F(lambda d: {k: v for k, v in d.items() if v is not None})
         b = filter_none << {'a': K(1), 'b': K(None), 'c': False}
         self.assert_bender(b, {}, {'a': 1, 'c': False})
 
