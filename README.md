@@ -1,6 +1,8 @@
 About
 ---
 
+[![Build Status](https://travis-ci.com/moreonion/jsonbender.svg?branch=develop)](https://travis-ci.com/moreonion/jsonbender) [![codecov](https://codecov.io/gh/moreonion/jsonbender/branch/develop/graph/badge.svg)](https://codecov.io/gh/moreonion/jsonbender)
+
 JSONBender is an embedded Python [DSL](https://en.wikipedia.org/wiki/Domain-specific_language) for transforming dicts.
 It's name is inspired by Nickelodeon's cartoon series [Avatar: The Last Airbender](https://en.wikipedia.org/wiki/Avatar:_The_Last_Airbender).
 
