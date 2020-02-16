@@ -4,20 +4,17 @@ class Bender(object):
     Base bending class. All selectors and transformations should directly or
     indirectly derive from this. Should not be instantiated.
 
-    Whenever a bender is activated (by the bend() function), the execute()
+    Whenever a bender is activated (by the bend() function), the bend()
     method is called with the source as it's single argument.
     All bending logic should be there.
 
-    Subclasses must implement __init__() and execute() methods.
+    Subclasses must implement __init__() and bend() methods.
     """
 
     def __init__(self, *args, **kwargs):
         pass
 
-    def __call__(self, source):
-        return self.execute(source)
-
-    def execute(self, source):
+    def bend(self, source):
         raise NotImplementedError()
 
     def __eq__(self, other):
@@ -73,7 +70,7 @@ class K(Bender):
     def __init__(self, value):
         self._val = value
 
-    def execute(self, source):
+    def bend(self, source):
         return self._val
 
 
@@ -83,8 +80,8 @@ class List(Bender):
     def __init__(self, list_):
         self.list = [benderify(v) for v in list_]
 
-    def execute(self, source):
-        return [v.execute(source) for v in self.list]
+    def bend(self, source):
+        return [v.bend(source) for v in self.list]
 
 
 class Dict(Bender):
@@ -93,11 +90,11 @@ class Dict(Bender):
     def __init__(self, dict_):
         self.dict = {k: benderify(v) for k, v in dict_.items()}
 
-    def execute(self, source):
+    def bend(self, source):
         res = {}
         for k, v in self.dict.items():
             try:
-                res[k] = v.execute(source)
+                res[k] = v.bend(source)
             except Exception as e:
                 m = 'Error for key {}: {}'.format(k, str(e))
                 raise BendingException(m)
@@ -108,7 +105,7 @@ class GetItem(Bender):
     def __init__(self, index):
         self._index = index
 
-    def execute(self, value):
+    def bend(self, value):
         return value[self._index]
 
 
@@ -117,8 +114,8 @@ class Compose(Bender):
         self._first = benderify(first)
         self._second = benderify(second)
 
-    def execute(self, source):
-        return self._second.execute(self._first.execute(source))
+    def bend(self, source):
+        return self._second.bend(self._first.bend(source))
 
 
 class UnaryOperator(Bender):
@@ -139,8 +136,8 @@ class UnaryOperator(Bender):
     def op(self, v):
         raise NotImplementedError()
 
-    def execute(self, source):
-        return self.op(self.bender(source))
+    def bend(self, source):
+        return self.op(self.bender.bend(source))
 
 
 class Neg(UnaryOperator):
@@ -172,9 +169,9 @@ class BinaryOperator(Bender):
     def op(self, v1, v2):
         raise NotImplementedError()
 
-    def execute(self, source):
-        return self.op(self._bender1(source),
-                       self._bender2(source))
+    def bend(self, source):
+        return self.op(self._bender1.bend(source),
+                       self._bender2.bend(source))
 
 
 class Add(BinaryOperator):
@@ -244,5 +241,4 @@ def bend(mapping, source):
 
     returns a new dict according to the provided map.
     """
-    return benderify(mapping)(source)
-
+    return benderify(mapping).bend(source)

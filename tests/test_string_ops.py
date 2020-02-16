@@ -19,8 +19,8 @@ class TestProtectedFormat(unittest.TestCase):
             '{} {} {} {noun}.',
             K('This'), K('is'), K('a'), noun=S('noun').optional(),
         )
-        assert bender({}) is None
-        assert bender({'noun': 'test'}) == 'This is a test.'
+        assert bender.bend({}) is None
+        assert bender.bend({'noun': 'test'}) == 'This is a test.'
 
 
 if __name__ == '__main__':

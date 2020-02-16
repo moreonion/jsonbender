@@ -5,14 +5,14 @@ class S(Bender):
     """
     Selects a path of keys.
     Example:
-        S('a', 0, 'b').execute({'a': [{'b': 42}]}) -> 42
+        S('a', 0, 'b').bend({'a': [{'b': 42}]}) -> 42
     """
     def __init__(self, *path):
         if not path:
             raise ValueError('No path given')
         self._path = path
 
-    def execute(self, source):
+    def bend(self, source):
         for key in self._path:
             source = source[key]
         return source
@@ -31,16 +31,16 @@ class OptionalS(S):
 
     `default` defaults to None.
     Example:
-        OptionalS('a', 0, 'b', default=23).execute({'a': []}) -> 23
+        OptionalS('a', 0, 'b', default=23).bend({'a': []}) -> 23
     """
 
     def __init__(self, *path, **kwargs):
         self.default = kwargs.get('default')
         super(OptionalS, self).__init__(*path)
 
-    def execute(self, source):
+    def bend(self, source):
         try:
-            ret = super(OptionalS, self).execute(source)
+            ret = super(OptionalS, self).bend(source)
         except LookupError:
             return self.default
         else:
@@ -66,7 +66,7 @@ class F(Bender):
         self._args = args
         self._kwargs = kwargs
 
-    def execute(self, value):
+    def bend(self, value):
         return self._func(value, *self._args, **self._kwargs)
 
     def protect(self, protect_against=None):
@@ -90,7 +90,7 @@ class ProtectedF(F):
     Example:
     ```
         f = ProtectedF(lambda i: 1.0 / i, protect_against=0.0)
-        f.execute(0)  # -> 0
+        f.bend(0)  # -> 0
     ```
 
     """
@@ -98,10 +98,10 @@ class ProtectedF(F):
         self._protect_against = kwargs.pop('protect_against', None)
         super(ProtectedF, self).__init__(func, *args, **kwargs)
 
-    def execute(self, value):
+    def bend(self, value):
         if value == self._protect_against:
             return value
         else:
-            return super(ProtectedF, self).execute(value)
+            return super(ProtectedF, self).bend(value)
 
 

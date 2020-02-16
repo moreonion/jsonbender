@@ -13,7 +13,7 @@ class Format(Bender):
     ```
     fmt = Format('{} {} {last}', S('first'), S('second'), last=S('last'))
     source = {'first': 'Edsger', 'second': 'W.', 'last': 'Dijkstra'}
-    fmt.execute(source)  # -> 'Edsger W. Dijkstra'
+    fmt.bend(source)  # -> 'Edsger W. Dijkstra'
     ```
     """
     def __init__(self, format_string, *args, **kwargs):
@@ -21,9 +21,9 @@ class Format(Bender):
         self._positional_benders = args
         self._named_benders = kwargs
 
-    def execute(self, source):
-        args = [bender(source) for bender in self._positional_benders]
-        kwargs = {k: bender(source)
+    def bend(self, source):
+        args = [bender.bend(source) for bender in self._positional_benders]
+        kwargs = {k: bender.bend(source)
                   for k, bender in self._named_benders.items()}
         return self._format_str.format(*args, **kwargs)
 
@@ -35,19 +35,19 @@ class ProtectedFormat(Format):
     Examples:
         fmt = Format('{} {} {last}', S('first'), S('second'), last=S('last'))
         source = {'first': 'Edsger', 'second': 'W.', 'last': 'Dijkstra'}
-        fmt.execute(source)  # -> 'Edsger W. Dijkstra'
+        fmt.bend(source)  # -> 'Edsger W. Dijkstra'
 
         fmt = Format('{} {}', S('first'), S('second'))
         source = {'first': 'Edsger'}
-        fmt.execute(source)  # -> None
+        fmt.bend(source)  # -> None
     """
-    def execute(self, source):
+    def bend(self, source):
         # if any of the args to print are None, return None
         if any(
-            [bender(source) is None for bender in self._positional_benders] +
-            [bender(source) is None for bender in self._named_benders.values()]
+            [bender.bend(source) is None for bender in self._positional_benders] +
+            [bender.bend(source) is None for bender in self._named_benders.values()]
         ):
             # create an object with property value=None so it can be processed
             return None
         # else just behave normally
-        return super(ProtectedFormat, self).execute(source)
+        return super(ProtectedFormat, self).bend(source)

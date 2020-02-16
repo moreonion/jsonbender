@@ -32,10 +32,10 @@ class ListOp(Bender):
     def op(self, func, vals):
         raise NotImplementedError()
 
-    def execute(self, source):
+    def bend(self, source):
         # TODO: this is here for compatibility reasons
         if self._bender:
-            source = self._bender(source)
+            source = self._bender.bend(source)
         return self.op(self._func, source)
 
 
@@ -47,7 +47,7 @@ class Forall(ListOp):
 
     Example:
     ```
-    Forall(lambda i: i * 2)(range(5))  # -> [0, 2, 4, 6, 8]
+    Forall(lambda i: i * 2).bend(range(5))  # -> [0, 2, 4, 6, 8]
     ```
     """
 
@@ -68,9 +68,9 @@ class ForallBend(Forall):
         # remove this when ListOp also breaks retrocompatibility
         self._bender = None
 
-    def execute(self, source):
+    def bend(self, source):
         self._func = lambda v: bend(self._mapping, v)
-        return super().execute(source)
+        return super().bend(source)
 
 
 class Reduce(ListOp):
@@ -85,7 +85,7 @@ class Reduce(ListOp):
 
     Example: To sum a given list,
     ```
-    Reduce(lambda acc, i: acc + i)([1, 4, 6])  # -> 11
+    Reduce(lambda acc, i: acc + i).bend([1, 4, 6])  # -> 11
     ```
     """
     def op(self, func, vals):
@@ -103,7 +103,7 @@ class Filter(ListOp):
 
     Example:
     ```
-    Filter(lambda i: i % 2 == 0)(range(5))  # -> [0, 2, 4]
+    Filter(lambda i: i % 2 == 0).bend(range(5))  # -> [0, 2, 4]
     ```
     """
 
@@ -119,7 +119,7 @@ class FlatForall(ListOp):
 
     Example:
     ```
-    FlatForall(lambda x: [x-1, x+1])([1, 10, 100])  ->
+    FlatForall(lambda x: [x-1, x+1]).bend([1, 10, 100])  ->
          [[0, 2], [9, 11], [99, 101]] ->
          [0, 1, 9, 11, 99, 101]
     ```

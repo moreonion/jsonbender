@@ -40,7 +40,7 @@ class TestReduce(ListOpTestCase):
 
     def test_empty_list(self):
         bender = Reduce(add)
-        self.assertRaises(ValueError, bender, [])
+        self.assertRaises(ValueError, bender.bend, [])
 
     def test_nonempty_list(self):
         self.assert_list_op(range(1, 5), add, 10)
