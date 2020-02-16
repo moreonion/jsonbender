@@ -3,7 +3,7 @@ import unittest
 import sys
 
 from jsonbender import S, K, F
-from jsonbender.core import bend, BendingException, Context
+from jsonbender.core import bend, BendingException
 from jsonbender.test import BenderTestMixin
 
 
@@ -77,16 +77,6 @@ class TestBend(unittest.TestCase):
         self.assertDictEqual(bend(mapping, {}),
                              {'a': 'a const value', 'b': 123})
 
-    def test_context_shallow(self):
-        mapping = {'a': Context() >> S('b')}
-        res = bend(mapping, {}, context={'b': 23})
-        self.assertDictEqual(res, {'a': 23})
-
-    def test_context_deep(self):
-        mapping = {'a': [{'a': Context() >> S('b')}]}
-        res = bend(mapping, {}, context={'b': 23})
-        self.assertDictEqual(res, {'a': [{'a': 23}]})
-
 
 class TestOperators(unittest.TestCase, BenderTestMixin):
     def test_add(self):
@@ -105,13 +95,6 @@ class TestOperators(unittest.TestCase, BenderTestMixin):
     def test_neg(self):
         self.assert_bender(-K(1), None, -1)
         self.assert_bender(-K(-1), None, 1)
-
-    def test_op_with_context(self):
-        mapping = {'res': (Context() >> S('b')) - S('a')}
-        in_ = {'a': 23}
-        context = {'b': 27}
-        res = bend(mapping, in_, context=context)
-        self.assertEqual(res, {'res': 4})
 
     def test_eq(self):
         self.assert_bender(K(42) == K(42), None, True)

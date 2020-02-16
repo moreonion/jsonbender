@@ -1,7 +1,6 @@
 from jsonbender.core import Bender
 
 
-
 class S(Bender):
     """
     Selects a path of keys.

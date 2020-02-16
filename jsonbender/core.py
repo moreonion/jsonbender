@@ -15,11 +15,10 @@ class Bender(object):
         pass
 
     def __call__(self, source):
-        return self.raw_execute(source).value
+        return self.raw_execute(source)
 
     def raw_execute(self, source):
-        transport = Transport.from_source(source)
-        return Transport(self.execute(transport.value), transport.context)
+        return self.execute(source)
 
     def execute(self, source):
         raise NotImplementedError()
@@ -88,9 +87,7 @@ class List(Bender):
         self.list = [benderify(v) for v in list_]
 
     def raw_execute(self, source):
-        source = Transport.from_source(source)
-        res = [v.raw_execute(source).value for v in self.list]
-        return Transport(res, source.context)
+        return [v.raw_execute(source) for v in self.list]
 
 
 class Dict(Bender):
@@ -100,15 +97,14 @@ class Dict(Bender):
         self.dict = {k: benderify(v) for k, v in dict_.items()}
 
     def raw_execute(self, source):
-        source = Transport.from_source(source)
         res = {}
         for k, v in self.dict.items():
             try:
-                res[k] = v.raw_execute(source).value
+                res[k] = v.raw_execute(source)
             except Exception as e:
                 m = 'Error for key {}: {}'.format(k, str(e))
                 raise BendingException(m)
-        return Transport(res, source.context)
+        return res
 
 
 class GetItem(Bender):
@@ -147,9 +143,7 @@ class UnaryOperator(Bender):
         raise NotImplementedError()
 
     def raw_execute(self, source):
-        source = Transport.from_source(source)
-        val = self.op(self.bender(source))
-        return Transport(val, source.context)
+        return self.op(self.bender(source))
 
 
 class Neg(UnaryOperator):
@@ -182,10 +176,8 @@ class BinaryOperator(Bender):
         raise NotImplementedError()
 
     def raw_execute(self, source):
-        source = Transport.from_source(source)
-        val = self.op(self._bender1(source),
-                      self._bender2(source))
-        return Transport(val, source.context)
+        return self.op(self._bender1(source),
+                       self._bender2(source))
 
 
 class Add(BinaryOperator):
@@ -228,27 +220,8 @@ class Or(BinaryOperator):
         return v1 or v2
 
 
-class Context(Bender):
-    def raw_execute(self, source):
-        transport = Transport.from_source(source)
-        return Transport(transport.context, transport.context)
-
-
 class BendingException(Exception):
     pass
-
-
-class Transport(object):
-    def __init__(self, value, context):
-        self.value = value
-        self.context = context
-
-    @classmethod
-    def from_source(cls, source):
-        if isinstance(source, cls):
-            return source
-        else:
-            return cls(source, {})
 
 
 def benderify(mapping):
@@ -265,7 +238,7 @@ def benderify(mapping):
     return K(mapping)
 
 
-def bend(mapping, source, context=None):
+def bend(mapping, source):
     """
     The main bending function.
 
@@ -274,7 +247,5 @@ def bend(mapping, source, context=None):
 
     returns a new dict according to the provided map.
     """
-    context = {} if context is None else context
-    transport = Transport(source, context)
-    return benderify(mapping)(transport)
+    return benderify(mapping)(source)
 

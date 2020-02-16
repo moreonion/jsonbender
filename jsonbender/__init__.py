@@ -1,4 +1,4 @@
-from jsonbender.core import Bender, Context, K, bend, BendingException
+from jsonbender.core import Bender, K, bend, BendingException
 from jsonbender.list_ops import FlatForall, Forall, Filter, Reduce
 from jsonbender.string_ops import Format
 from jsonbender.selectors import F, S, OptionalS

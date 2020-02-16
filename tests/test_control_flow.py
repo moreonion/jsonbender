@@ -1,7 +1,7 @@
 from operator import add
 import unittest
 
-from jsonbender import Context, K, S, bend
+from jsonbender import K, S, bend
 from jsonbender.control_flow import If, Alternation, Switch
 from jsonbender.test import BenderTestMixin
 

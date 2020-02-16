@@ -1,4 +1,4 @@
-from jsonbender.core import Bender, Transport
+from jsonbender.core import Bender
 
 
 class Format(Bender):
@@ -22,12 +22,10 @@ class Format(Bender):
         self._named_benders = kwargs
 
     def raw_execute(self, source):
-        transport = Transport.from_source(source)
         args = [bender(source) for bender in self._positional_benders]
         kwargs = {k: bender(source)
                   for k, bender in self._named_benders.items()}
-        value = self._format_str.format(*args, **kwargs)
-        return Transport(value, transport.context)
+        return self._format_str.format(*args, **kwargs)
 
 
 class ProtectedFormat(Format):
@@ -50,6 +48,6 @@ class ProtectedFormat(Format):
             [bender(source) is None for bender in self._named_benders.values()]
         ):
             # create an object with property value=None so it can be processed
-            return type(str('none_obj'), (object,), dict(value=None))
+            return None
         # else just behave normally
         return super(ProtectedFormat, self).raw_execute(source)
