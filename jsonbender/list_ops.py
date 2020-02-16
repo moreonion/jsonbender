@@ -86,9 +86,9 @@ class ForallBend(Forall):
         # remove this when ListOp also breaks retrocompatibility
         self._bender = None
 
-    def raw_execute(self, source):
+    def execute(self, source):
         self._func = lambda v: bend(self._mapping, v)
-        return self.execute(source)
+        return super().execute(source)
 
 
 class Reduce(ListOp):

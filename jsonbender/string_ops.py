@@ -21,7 +21,7 @@ class Format(Bender):
         self._positional_benders = args
         self._named_benders = kwargs
 
-    def raw_execute(self, source):
+    def execute(self, source):
         args = [bender(source) for bender in self._positional_benders]
         kwargs = {k: bender(source)
                   for k, bender in self._named_benders.items()}
@@ -41,7 +41,7 @@ class ProtectedFormat(Format):
         source = {'first': 'Edsger'}
         fmt.execute(source)  # -> None
     """
-    def raw_execute(self, source):
+    def execute(self, source):
         # if any of the args to print are None, return None
         if any(
             [bender(source) is None for bender in self._positional_benders] +
@@ -50,4 +50,4 @@ class ProtectedFormat(Format):
             # create an object with property value=None so it can be processed
             return None
         # else just behave normally
-        return super(ProtectedFormat, self).raw_execute(source)
+        return super(ProtectedFormat, self).execute(source)

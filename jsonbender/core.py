@@ -15,9 +15,6 @@ class Bender(object):
         pass
 
     def __call__(self, source):
-        return self.raw_execute(source)
-
-    def raw_execute(self, source):
         return self.execute(source)
 
     def execute(self, source):
@@ -86,8 +83,8 @@ class List(Bender):
     def __init__(self, list_):
         self.list = [benderify(v) for v in list_]
 
-    def raw_execute(self, source):
-        return [v.raw_execute(source) for v in self.list]
+    def execute(self, source):
+        return [v.execute(source) for v in self.list]
 
 
 class Dict(Bender):
@@ -96,11 +93,11 @@ class Dict(Bender):
     def __init__(self, dict_):
         self.dict = {k: benderify(v) for k, v in dict_.items()}
 
-    def raw_execute(self, source):
+    def execute(self, source):
         res = {}
         for k, v in self.dict.items():
             try:
-                res[k] = v.raw_execute(source)
+                res[k] = v.execute(source)
             except Exception as e:
                 m = 'Error for key {}: {}'.format(k, str(e))
                 raise BendingException(m)
@@ -120,8 +117,8 @@ class Compose(Bender):
         self._first = benderify(first)
         self._second = benderify(second)
 
-    def raw_execute(self, source):
-        return self._second.raw_execute(self._first.raw_execute(source))
+    def execute(self, source):
+        return self._second.execute(self._first.execute(source))
 
 
 class UnaryOperator(Bender):
@@ -142,7 +139,7 @@ class UnaryOperator(Bender):
     def op(self, v):
         raise NotImplementedError()
 
-    def raw_execute(self, source):
+    def execute(self, source):
         return self.op(self.bender(source))
 
 
@@ -175,7 +172,7 @@ class BinaryOperator(Bender):
     def op(self, v1, v2):
         raise NotImplementedError()
 
-    def raw_execute(self, source):
+    def execute(self, source):
         return self.op(self._bender1(source),
                        self._bender2(source))
 
