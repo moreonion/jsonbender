@@ -54,24 +54,6 @@ class Forall(ListOp):
     def op(self, func, vals):
         return list(map(func, vals))
 
-    @classmethod
-    def bend(cls, mapping):
-        """
-        Return a ForallBend instance that bends each element of the list with the
-        given mapping.
-
-        mapping: a JSONBender mapping as passed to the `bend()` function.
-
-        Example:
-        ```
-        source = [{'a': 23}, {'a': 27}]
-        bender = Forall.bend({'b': S('a')})
-        bender(source)  # -> [{'b': 23}, {'b': 27}]
-        ```
-
-        """
-        return ForallBend(mapping)
-
 
 class ForallBend(Forall):
     """
