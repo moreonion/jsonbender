@@ -2,7 +2,7 @@ from functools import reduce
 from itertools import chain
 from warnings import warn
 
-from jsonbender.core import Bender, bend, Transport
+from jsonbender.core import Bender, bend
 
 
 class ListOp(Bender):
@@ -32,10 +32,10 @@ class ListOp(Bender):
     def op(self, func, vals):
         raise NotImplementedError()
 
-    def execute(self, source):
+    def bend(self, source):
         # TODO: this is here for compatibility reasons
         if self._bender:
-            source = self._bender(source)
+            source = self._bender.bend(source)
         return self.op(self._func, source)
 
 
@@ -47,33 +47,12 @@ class Forall(ListOp):
 
     Example:
     ```
-    Forall(lambda i: i * 2)(range(5))  # -> [0, 2, 4, 6, 8]
+    Forall(lambda i: i * 2).bend(range(5))  # -> [0, 2, 4, 6, 8]
     ```
     """
 
     def op(self, func, vals):
         return list(map(func, vals))
-
-    @classmethod
-    def bend(cls, mapping, context=None):
-        """
-        Return a ForallBend instance that bends each element of the list with the
-        given mapping.
-
-        mapping: a JSONBender mapping as passed to the `bend()` function.
-        context: optional. the context that will be passed to `bend()`.
-                 Note that if context is not passed, it defaults at bend-time
-                 to the one passed to the outer mapping.
-
-        Example:
-        ```
-        source = [{'a': 23}, {'a': 27}]
-        bender = Forall.bend({'b': S('a')})
-        bender(source)  # -> [{'b': 23}, {'b': 27}]
-        ```
-
-        """
-        return ForallBend(mapping, context)
 
 
 class ForallBend(Forall):
@@ -81,24 +60,17 @@ class ForallBend(Forall):
     Bends each element of the list with given mapping and context.
 
     mapping: a JSONBender mapping as passed to the `bend()` function.
-    context: optional. the context that will be passed to `bend()`.
-             Note that if context is not passed, it defaults at bend-time
-             to the one passed to the outer mapping.
     """
 
     def __init__(self, mapping, context=None):
         self._mapping = mapping
-        self._context = context
         # TODO this is here for retrocompatibility reasons.
         # remove this when ListOp also breaks retrocompatibility
         self._bender = None
 
-    def raw_execute(self, source):
-        transport = Transport.from_source(source)
-        context = self._context or transport.context
-        # ListOp.execute assumes the func is saved on self._func
-        self._func = lambda v: bend(self._mapping, v, context)
-        return Transport(self.execute(transport.value), transport.context)
+    def bend(self, source):
+        self._func = lambda v: bend(self._mapping, v)
+        return super().bend(source)
 
 
 class Reduce(ListOp):
@@ -113,7 +85,7 @@ class Reduce(ListOp):
 
     Example: To sum a given list,
     ```
-    Reduce(lambda acc, i: acc + i)([1, 4, 6])  # -> 11
+    Reduce(lambda acc, i: acc + i).bend([1, 4, 6])  # -> 11
     ```
     """
     def op(self, func, vals):
@@ -131,7 +103,7 @@ class Filter(ListOp):
 
     Example:
     ```
-    Filter(lambda i: i % 2 == 0)(range(5))  # -> [0, 2, 4]
+    Filter(lambda i: i % 2 == 0).bend(range(5))  # -> [0, 2, 4]
     ```
     """
 
@@ -147,7 +119,7 @@ class FlatForall(ListOp):
 
     Example:
     ```
-    FlatForall(lambda x: [x-1, x+1])([1, 10, 100])  ->
+    FlatForall(lambda x: [x-1, x+1]).bend([1, 10, 100])  ->
          [[0, 2], [9, 11], [99, 101]] ->
          [0, 1, 9, 11, 99, 101]
     ```

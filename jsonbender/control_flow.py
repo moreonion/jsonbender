@@ -25,10 +25,10 @@ class If(Bender):
         self.when_true = when_true
         self.when_false = when_false
 
-    def execute(self, val):
-        return (self.when_true(val)
-                if self.condition(val)
-                else self.when_false(val))
+    def bend(self, val):
+        return (self.when_true.bend(val)
+                if self.condition.bend(val)
+                else self.when_false.bend(val))
 
 
 class Alternation(Bender):
@@ -51,11 +51,11 @@ class Alternation(Bender):
     def __init__(self, *benders):
         self.benders = benders
 
-    def execute(self, source):
+    def bend(self, source):
         exc = ValueError()
         for bender in self.benders:
             try:
-                result = bender(source)
+                result = bender.bend(source)
             except LookupError as e:
                 exc = e
             else:
@@ -93,8 +93,8 @@ class Switch(Bender):
         self.cases = cases
         self.default = default
 
-    def execute(self, source):
-        key = self.key_bender(source)
+    def bend(self, source):
+        key = self.key_bender.bend(source)
         try:
             bender = self.cases[key]
         except LookupError:
@@ -103,5 +103,5 @@ class Switch(Bender):
             else:
                 raise
 
-        return bender(source)
+        return bender.bend(source)
 

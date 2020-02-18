@@ -1,7 +1,7 @@
 import unittest
 
-from jsonbender import Context, K, S
-from jsonbender.string_ops import Format
+from jsonbender import K, S
+from jsonbender.string_ops import Format, ProtectedFormat
 from jsonbender.test import BenderTestMixin
 
 
@@ -12,10 +12,15 @@ class TestFormat(unittest.TestCase, BenderTestMixin):
                         noun=K('test'))
         self.assert_bender(bender, None, 'This is a test.')
 
-    def test_with_context(self):
-        bender = Format('value: {}',  Context() >> S('b'))
-        self.assert_bender(bender, None, 'value: 23',
-                           context={'b': 23})
+
+class TestProtectedFormat(unittest.TestCase):
+    def test_format(self):
+        bender = ProtectedFormat(
+            '{} {} {} {noun}.',
+            K('This'), K('is'), K('a'), noun=S('noun').optional(),
+        )
+        assert bender.bend({}) is None
+        assert bender.bend({'noun': 'test'}) == 'This is a test.'
 
 
 if __name__ == '__main__':

@@ -1,8 +1,8 @@
 from operator import add
 import unittest
 
-from jsonbender import Context, K, S, bend
-from jsonbender.list_ops import Forall, FlatForall, Filter, ListOp, Reduce
+from jsonbender import K, S, bend
+from jsonbender.list_ops import Forall, ForallBend, FlatForall, Filter, ListOp, Reduce
 from jsonbender.test import BenderTestMixin
 
 
@@ -27,25 +27,12 @@ class TestForall(ListOpTestCase):
         bender = self.cls(K([1]), lambda i: i)
         self.assert_bender(bender, {}, [1])
 
+
+class TestForallBend(ListOpTestCase):
+    cls = ForallBend
+
     def test_bend(self):
-        self.assert_bender(self.cls.bend({'b': S('a')}),
-                           [{'a': 23}, {'a': 27}],
-                           [{'b': 23}, {'b': 27}])
-
-    def test_bend_with_context(self):
-        mapping = {'b': Context() >> S('c')}
-        context = {'c': 42}
-        self.assert_bender(self.cls.bend(mapping, context),
-                           [{}, {}],
-                           [{'b': 42}, {'b': 42}])
-
-    def test_bend_inherits_outer_context_by_default(self):
-        inner_mapping = {'val': Context()}
-        outer_mapping = {'a': S('items') >> Forall.bend(inner_mapping)}
-        source = {'items': range(3)}
-        got = bend(outer_mapping, source, context=27)
-        expected = {'a': [{'val': 27}, {'val': 27}, {'val': 27}]}
-        self.assertEqual(got, expected)
+        self.assert_list_op([{'a': 23}, {'a': 27}], {'b': S('a')}, [{'b': 23}, {'b': 27}])
 
 
 class TestReduce(ListOpTestCase):
@@ -53,7 +40,7 @@ class TestReduce(ListOpTestCase):
 
     def test_empty_list(self):
         bender = Reduce(add)
-        self.assertRaises(ValueError, bender, [])
+        self.assertRaises(ValueError, bender.bend, [])
 
     def test_nonempty_list(self):
         self.assert_list_op(range(1, 5), add, 10)

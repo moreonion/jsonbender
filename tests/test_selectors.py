@@ -30,10 +30,10 @@ class TestS(unittest.TestCase, STestsMixin):
     selector_cls = S
 
     def test_shallow_missing_field(self):
-        self.assertRaises(KeyError, self.selector_cls('k'), {})
+        self.assertRaises(KeyError, self.selector_cls('k').bend, {})
 
     def test_deep_missing_field(self):
-        self.assertRaises(KeyError, self.selector_cls('k', 'k2'), {'k': {}})
+        self.assertRaises(KeyError, self.selector_cls('k', 'k2').bend, {'k': {}})
 
 
 class TestOptionalS(unittest.TestCase, STestsMixin):

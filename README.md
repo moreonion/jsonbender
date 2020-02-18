@@ -408,22 +408,24 @@ assert ret == {'name': 'Mary', 'pythonista': True}
 
 ### Context
 
-Sometimes it's necessary to use values at bending time that are not on the
-source json and are not known at mapping time.
-For these cases there is the optional `context` argument to `bend()` function.
-Whatever you pass for the argument is can be used at bending time by the
-`Context()` bender.
-
+Sometimes it’s necessary to use values at bending time that are not on the
+source json and are not known at mapping time. In this case it’s easiest to wrap
+the source and the context inside a dictionary:
 
 ```python
-from jsonbender import bend, Context, S
+from jsonbender import bend, S
 
+source = S('source')
+context = S('context')
 MAPPING = {
-    'name': S('name'),
-    'age': (Context() >> S('year')) - S('birthyear'),
+    'name': source['name'],
+    'age': context['year'] - source['birthyear'],
 }
 source = {'name': 'Mary', 'birthyear': 1990}
-ret = bend(MAPPING, source, context={'year': 2016})
+ret = bend(MAPPING, {
+  'source': source,
+  'context': {'year': 2016},
+})
 assert ret == {'name': 'Mary', 'age': 26}
 ```
 

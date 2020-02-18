@@ -1,7 +1,7 @@
 from operator import add
 import unittest
 
-from jsonbender import Context, K, S, bend
+from jsonbender import K, S, bend
 from jsonbender.control_flow import If, Alternation, Switch
 from jsonbender.test import BenderTestMixin
 
@@ -34,7 +34,7 @@ class TestIf(BenderTestMixin, unittest.TestCase):
 
 class TestAlternation(BenderTestMixin, unittest.TestCase):
     def test_empty_benders(self):
-        self.assertRaises(ValueError, Alternation(), {})
+        self.assertRaises(ValueError, Alternation().bend, {})
 
     def test_matches(self):
         bender = Alternation(S(1), S(0), S('key1'))
@@ -43,8 +43,8 @@ class TestAlternation(BenderTestMixin, unittest.TestCase):
         self.assert_bender(bender, {'key1': 23}, 23)
 
     def test_no_match(self):
-        self.assertRaises(IndexError, Alternation(S(1)), [])
-        self.assertRaises(KeyError, Alternation(S(1)), {})
+        self.assertRaises(IndexError, Alternation(S(1)).bend, [])
+        self.assertRaises(KeyError, Alternation(S(1)).bend, {})
 
 
 class TestSwitch(BenderTestMixin, unittest.TestCase):
@@ -74,7 +74,7 @@ class TestSwitch(BenderTestMixin, unittest.TestCase):
                            'email@whatever.com')
 
     def test__no_match_without_default(self):
-        self.assertRaises(KeyError, Switch(S('key'), {}), {'key': None})
+        self.assertRaises(KeyError, Switch(S('key'), {}).bend, {'key': None})
 
 
 if __name__ == '__main__':
