@@ -297,19 +297,19 @@ from jsonbender.control_flow import Alternation
 
 b = Alternation(S(1), S(0), S('key1'))
 
-b(['a', 'b'])  #  -> 'b'
-b(['a'])  #  -> 'a'
+b.bend(['a', 'b'])  #  -> 'b'
+b.bend(['a'])  #  -> 'a'
 try:
-    b([])  #  -> TypeError
+    b.bend([])  #  -> TypeError
 except TypeError:
     pass
 
 try:
-    b({})  #  -> KeyError
+    b.bend({})  #  -> KeyError
 except KeyError:
     pass
 
-b({'key1': 23})  # -> 23
+b.bend({'key1': 23})  # -> 23
 ```
 
 ##### If
@@ -323,13 +323,13 @@ from jsonbender import K, S
 from jsonbender.control_flow import If
 
 if_ = If(S('country') == K('China'), S('first_name'), S('last_name'))
-if_({'country': 'China',
-     'first_name': 'Li',
-     'last_name': 'Na'})  # ->  'Li'
+if_.bend({'country': 'China',
+          'first_name': 'Li',
+          'last_name': 'Na'})  # ->  'Li'
 
-if_({'country': 'Brazil',
-     'first_name': 'Gustavo',
-     'last_name': 'Kuerten'})  # -> 'Kuerten'
+if_.bend({'country': 'Brazil',
+          'first_name': 'Gustavo',
+          'last_name': 'Kuerten'})  # -> 'Kuerten'
 ```
 
 ##### Switch
@@ -353,11 +353,11 @@ b = Switch(S('service'),
             'mastodon': S('handle') + K('@') + S('server')},
            default=S('email'))
 
-b({'service': 'twitter', 'handle': 'etandel'})  #  -> 'etandel'
-b({'service': 'mastodon', 'handle': 'etandel',
-   'server': 'mastodon.social'})  #  -> 'etandel@mastodon.social'
-b({'service': 'facebook',
-   'email': 'email@whatever.com'})  #  -> 'email@whatever.com'
+b.bend({'service': 'twitter', 'handle': 'etandel'})  #  -> 'etandel'
+b.bend({'service': 'mastodon', 'handle': 'etandel',
+        'server': 'mastodon.social'})  #  -> 'etandel@mastodon.social'
+b.bend({'service': 'facebook',
+        'email': 'email@whatever.com'})  #  -> 'email@whatever.com'
 ```
 
 #### String ops
@@ -428,4 +428,3 @@ ret = bend(MAPPING, {
 })
 assert ret == {'name': 'Mary', 'age': 26}
 ```
-
